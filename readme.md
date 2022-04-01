@@ -10,7 +10,7 @@
 
 <h2 id="content2">配線接続</h2>  
 
-<img alt="OSインストーラ画像" src="./img/servo.png" width="300" height="200">   
+<img alt="OSインストーラ画像" src="./img/servo.png" width="500" height="400">   
 
 <h2 id="content3">ESP32からServoを動かす</h2>  
 
