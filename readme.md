@@ -456,3 +456,4 @@ while(True):
 
 ```  
 
+- pythonを実行して動作確認
