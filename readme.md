@@ -17,15 +17,17 @@ ESP32のプログラムが実行され、紐とつながったモータ(Servo)�
 
 <h2 id="content2">配線接続</h2>  
 
-### 下図のようにESP32とServoを配線を接続する。  
+- 下図のようにESP32とServoを配線を接続する。  
+  ※ここでServoから出ている黄色い線は、ESP32の「D27」につなぐこと。
+  　(この後のソースをそのまま使用するため。)
 <img alt="OSインストーラ画像" src="./img/servo.png" width="500" height="350">   
 
 <h2 id="content3">ESP32からServoを動かす</h2>  
 
-### ESP32を動かすためのIDEをインストールする。  
+- ESP32を動かすためのIDEをインストールする。  
 <img alt="OSインストーラ画像" src="./img/スクリーンショット 2022-04-01 101506.png" width="700" height="400">   
 
-### 環境設定の説明 ～一度自分でやってみないとわからない～  
+- 環境設定の説明 ～一度自分でやってみないとわからない～  
   
   起動したら以下の設定を行う。  
 
@@ -48,6 +50,27 @@ ESP32のプログラムが実行され、紐とつながったモータ(Servo)�
     <img alt="OSインストーラ画像" src="./img/スクリーンショット-2021-08-01-140921-1024x690.png" width="700" height="400">   
     
 - 動作確認  
+
+  以下のソースをArduinoIDEにコピー。  
+
+  ```C#  
+  #include <Servo.h>
+
+  Servo myservo; //Servoオブジェクトを作成
+
+  void setup() {
+    myservo.attach(27); //27番ピンにサーボ制御線（黄色）を接続
+  }
+
+  void loop() {
+    myservo.write(180); //180度へ回転 
+    delay(1000);
+    myservo.write(0); //元に戻る
+    delay(1000);
+  }
+  ```  
+
+  Servoが動いたらOK。
 
 <h2 id="content4">Raspberry PiにOpencvをインストール</h2>  
 
