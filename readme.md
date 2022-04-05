@@ -189,12 +189,15 @@ ESP32のプログラムが実行され、紐とつながったモータ(Servo)�
 
 - pythonでServoを動かす。
 
-  Opencvフォルダ下で以下のファイルを作成する。  
+  Opencvフォルダ下で以下のファイルを作成する。
+
   ```  
   sudo nano blcontroll.py
   ``` 
+
   以下のソースをコピー  
-  ※このソースは現在検討中、いったんこれで動く  
+  ※このソースは現在検討中、いったんこれで動く
+
   ```  
   import bluetooth
 
@@ -207,7 +210,8 @@ ESP32のプログラムが実行され、紐とつながったモータ(Servo)�
   sock.send('on')
   ```  
 
-  ESP32とPCを接続し、Arduino IDEを開き、以下のソースをコピー  
+  ESP32とPCを接続し、Arduino IDEを開き、以下のソースをコピー
+   
   ```
   #include <Servo.h>
   #include "BluetoothSerial.h"
@@ -253,11 +257,13 @@ ESP32のプログラムが実行され、紐とつながったモータ(Servo)�
     delay(5);
   }
   ```
+
   以下のコマンドでソースを実行  
 
   ```  
   python3 blcontroll.py
   ```  
+
   servoモータが動けばOK。  
 
 <h2 id="content6">Raspberry Piとカメラを使って顔検出</h2>  
@@ -266,12 +272,14 @@ ESP32のプログラムが実行され、紐とつながったモータ(Servo)�
 - 顔検出のサンプルコードを作成する。  
 
 　Opencvフォルダ下で以下のファイルを作成する。  
+
   ```  
   sudo nano sample.py
   ```  
 
   以下のソースをコピー  
   (0.1秒毎に画像から顔を認識し、「顔認識OK」か「顔認識NG」をterminal上に出力するプログラム)  
+
   ```python  
   import cv2
   import time
@@ -304,6 +312,7 @@ ESP32のプログラムが実行され、紐とつながったモータ(Servo)�
           print("顔認識NG")
       time.sleep(0.1)
   ```  
+  
 - 動作確認  
   以下のコマンドでソースを実行  
   ```
