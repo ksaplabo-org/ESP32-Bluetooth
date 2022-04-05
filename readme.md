@@ -6,6 +6,7 @@
 - [Raspberry PiにOpencvをインストール](#content4)
 - [PythonでBluetooth通信](#content5)  
 - [Raspberry Piとカメラを使って顔検出](#content6)  
+- [顔認識でServoを動かす](#content7)  
 
 <h2 id="content1">目的説明</h2>  
 
@@ -324,5 +325,87 @@ ESP32のプログラムが実行され、紐とつながったモータ(Servo)�
 
   <img alt="OSインストーラ画像" src="./img/スクリーンショット 2022-04-05 135741.png" width="700" height="400">  
 
+<h2 id="content7">顔認識でServoを動かす</h2>  
+
+- ESP32とPCを接続し、Arduino IDEを開き、以下のソースをコピー  
+
+```C#  
+#include "BluetoothSerial.h"
+#include <Servo.h>
+
+#if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
+#error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
+#endif
+
+#define BT_NAME "Servo"
+
+BluetoothSerial SerialBT;
+Servo myservo;
+
+bool isOpen=false;
+int count = 0;
+
+void setup() {
+  Serial.begin(115200);
+  SerialBT.begin(BT_NAME);  
+  myservo.attach(27);
+  Init();
+}
+
+void loop() {
+  String readBuf="";
   
-  
+  if (SerialBT.available()) {
+    
+    // BlueToothからデータ読み込み
+    readBuf = SerialBT.readString();
+
+    Serial.println(readBuf);
+
+    if (readBuf.startsWith("on") && !isOpen){
+      Open();
+    }
+    if (readBuf.startsWith("off") && isOpen){
+      Close();
+    }
+  }
+  if (isOpen){
+    count = count + 1;
+  } else {
+    count = 0;
+  }
+  if(count > 50){
+    Close();
+    count=0;
+  }
+  delay(30);
+}  
+void Open(){
+  for (int pos = 180; pos >= 0; pos -= 1) { // goes from 0 degrees to 180 degrees
+    // in steps of 1 degree
+    myservo.write(pos);              // tell servo to go to position in variable 'pos'
+    delay(3);                       // waits 15ms for the servo to reach the position
+  }
+  isOpen = true;
+}
+void Close(){
+  for (int pos = 0; pos <= 180; pos += 1) { // goes from 180 degrees to 0 degrees
+    myservo.write(pos);              // tell servo to go to position in variable 'pos'
+    delay(3);                       // waits 15ms for the servo to reach the position
+  }
+  isOpen = false;
+}
+void Init(){
+  myservo.write(180);
+  delay(5);
+}
+
+```  
+
+- Opencvフォルダ下で以下のファイルを作成する。  
+
+```  
+sudo nano sample.py
+```  
+
+以下のソースをコピー  
