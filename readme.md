@@ -3,7 +3,9 @@
 - [目的説明](#content1)  
 - [配線接続](#content2)  
 - [ESP32からServoを動かす](#content3)  
-- [Raspberry PiにOpencvをインストール](#content4)  
+- [Raspberry PiにOpencvをインストール](#content4)
+- [PythonでBluetooth通信](#content5)  
+- [Raspberry Piとカメラを使って顔検出](#content6)  
 
 <h2 id="content1">目的説明</h2>  
 
@@ -154,7 +156,7 @@ ESP32のプログラムが実行され、紐とつながったモータ(Servo)�
   ```  
   sudo chmod 777 OpencvInstall.sh
   ```  
-  - shファイルを実行  
+  shファイルを実行  
   ```  
   OpencvInstall.sh
   ```  
@@ -176,11 +178,141 @@ ESP32のプログラムが実行され、紐とつながったモータ(Servo)�
   <エラー画像挿入>  
 
   上図のエラー内容は、Opencvを使うためのパッケージが存在しないせいでおこるエラーで
-  このようなエラーがでこのようなエラーが出た場合は、以下のサイトを参考にパッケージのインストールを行う。  
+  このようなエラーが出た場合は、以下のサイトを参考にパッケージのインストールを行う。  
 
   <参考サイト>  
   https://www.shangtian.tokyo/entry/2020/01/02/103124?msclkid=3cbfef7fb3bd11eca1390dff498f0039  
   numpyのパッケージのインストールはこのサイト  
   https://algorithm.joho.info/programming/python/numpy-core-multiarray-failed-to-import/?msclkid=871cc269b3be11ecbea8b1672457fdd1   
 
+<h2 id="content5">PythonでBluetooth通信</h2>  
+
+- pythonでServoを動かす。
+
+  Opencvフォルダ下で以下のファイルを作成する。  
+  ```  
+  sudo nano blcontroll.py
+  ``` 
+  以下のソースをコピー  
+  ※このソースは現在検討中、いったんこれで動く  
+  ```  
+  import bluetooth
+
+  server_addr = 'ESP32のMACアドレス'
+  server_port = 1
+
+  sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
+  sock.connect((server_addr, server_port))
+
+  sock.send('on')
+  ```  
+
+  ESP32とPCを接続し、Arduino IDEを開き、以下のソースをコピー  
+  ```
+  #include <Servo.h>
+  #include "BluetoothSerial.h"
+
+　#if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
+  #error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
+  #endif
+
+  #define BT_NAME "Servo"
+
+  BluetoothSerial SerialBT;
+  Servo myservo; //Servoオブジェクトを作成
+
+  void setup() {
+    myservo.attach(27); //27番ピンにサーボ制御線（黄色）を接続
+    SerialBT.begin(BT_NAME); 
+    Init();
+  }
+
+  void loop() {
+    String readBuf="";
+    
+    if (SerialBT.available()) {
+      
+      // BlueToothからデータ読み込み
+      readBuf = SerialBT.readString();
+
+      if (readBuf.startsWith("on")){
+        Open();
+      }
+    }
+  }
+
+  void Open(){
+  for (int pos = 180; pos >= 0; pos -= 1) { // goes from 0 degrees to 180 degrees
+    // in steps of 1 degree
+    myservo.write(pos);              // tell servo to go to position in variable 'pos'
+    delay(3);                       // waits 15ms for the servo to reach the position
+    }
+  }
+  void Init(){
+    myservo.write(180);
+    delay(5);
+  }
+  ```
+  以下のコマンドでソースを実行  
+
+  ```  
+  python3 blcontroll.py
+  ```  
+  servoモータが動けばOK。  
+
+<h2 id="content6">Raspberry Piとカメラを使って顔検出</h2>  
+
+- 外部カメラとRaspberry Piを接続する。
+- 顔検出のサンプルコードを作成する。  
+
+　Opencvフォルダ下で以下のファイルを作成する。  
+  ```  
+  sudo nano sample.py
+  ```  
+
+  以下のソースをコピー  
+  (0.1秒毎に画像から顔を認識し、「顔認識OK」か「顔認識NG」をterminal上に出力するプログラム)  
+  ```python  
+  import cv2
+  import time
+
+  #カスケード分類器のパス
+  #以下のパスにhaarcascade_frontalface_alt.xmlがなければ、存在するパスを指定してください
+  cascade_path="/usr/local/share/opencv4/haarcascades/haarcascade_frontalface_alt.xml"
+
+  #カスケード分類器を取得
+  cascade=cv2.CascadeClassifier(cascade_path)
+
+  #カメラからの画像データの読み込み
+  capture = cv2.VideoCapture(0)
+
+  #リアルタイム静止画像の読み取りを繰り返す
+  while(True):
+      #フレームの読み取り
+      ret,frame=capture.read()
+
+      #カメラから読み取った画像をグレースケールに変換
+      gray=cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
+
+      #顔の学習データ精査
+      front_face_list=cascade.detectMultiScale(gray,minSize=(50,50))
+
+      #顔と認識する場合は顔認識OKと出力
+      if len(front_face_list) != 0:
+          print("顔認識OK")
+      else:
+          print("顔認識NG")
+      time.sleep(0.1)
+  ```  
+- 動作確認  
+  以下のコマンドでソースを実行  
+  ```
+  python3 sample.py  
+  ```
+
+  下図のような実行結果になればOK  
+
+  <img alt="OSインストーラ画像" src="./img/スクリーンショット 2022-04-05 135741.png" width="700" height="400">  
+
+  
   
