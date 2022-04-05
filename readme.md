@@ -74,4 +74,113 @@ ESP32のプログラムが実行され、紐とつながったモータ(Servo)�
 
 <h2 id="content4">Raspberry PiにOpencvをインストール</h2>  
 
-- 以下のサイトを参考にからOpenCVのダウンロードを行う
+- Raspberry Piの設定手順はこちらを参考→https://github.com/ksaplabo-org/Raspi-Setup  
+
+- Tera Termを起動して、以下のコマンドを実行する。  
+  ```  
+  mkdir Opencv
+  cd Opencv
+
+  sudo nano OpencvInstall.sh
+  ```  
+
+  以下のソースを貼り付ける。
+  ```  sh
+  # パッケージ管理ツールの更新（apt-getでインストールをするときは必ず行います。）
+  sudo apt-get -y update
+  sudo apt-get -y upgrade
+
+  # Githubのページを参考にライブラリをダウンロード
+  # 開発ツール
+  sudo apt-get -yV install build-essential
+  sudo apt-get -yV install cmake
+  # 行列演算
+  sudo apt-get -yV install libeigen3-dev
+  # GUIフレームワーク関連
+  sudo apt-get -yV install libgtk-3-dev
+  sudo apt-get -yV install qt5-default
+  sudo apt-get -yV install libvtk7-qt-dev
+  sudo apt-get -yV install freeglut3-dev
+  # 並列処理関連
+  sudo apt-get -yV install libtbb-dev
+  # 画像フォーマット関連
+  sudo apt-get -yV install libjpeg-dev
+  sudo apt-get -yV install libopenjp2-7-dev
+  sudo apt-get -yV install libpng++-dev
+  sudo apt-get -yV install libtiff-dev
+  sudo apt-get -yV install libopenexr-dev
+  sudo apt-get -yV install libwebp-dev
+  # 動画像関連
+  sudo apt-get -yV install libavresample-dev
+  # その他
+  sudo apt-get -yV install libhdf5-dev
+  # Python関連
+  sudo apt-get -yV install libpython3-dev
+  sudo apt-get -yV install python3-numpy python3-scipy python3-matplotlib
+
+  # gitのインストール（ソースをダウンロードするときに使います。）
+  sudo apt-get -y install git
+
+  # ソースのダウンロード
+  cd /usr/local
+  sudo mkdir opencv4
+  cd /usr/local/opencv4
+  sudo git clone https://github.com/opencv/opencv.git
+  sudo git clone https://github.com/opencv/opencv_contrib.git
+
+  # ビルド用のディレクトリ作成（buildディレクトリを作成してその中でビルドするのがお作法です。）
+  cd opencv
+  sudo mkdir build
+  cd build
+
+  # ビルド
+  # 基本的にはOpenCV公式ページを参考にしました。
+  sudo cmake \
+  -D CMAKE_BUILD_TYPE=Release \
+  -D CMAKE_INSTALL_PREFIX=/usr/local \
+  -D OPENCV_EXTRA_MODULES_PATH=/usr/local/opencv4/opencv_contrib/modules \
+  PYTHON3_EXECUTABLE=/usr/lib/python3.7 \
+  PYTHON_INCLUDE_DIR=/usr/include/python3.7 \
+  PYTHON_INCLUDE_DIR2=/usr/include/arm-linux-gnueabihf/python3.7m \
+  PYTHON_LIBRARY=/usr/lib/arm-linux-gnueabihf/libpython3.7m.so \
+  PYTHON3_NUMPY_INCLUDE_DIRS =/usr/lib/python3/dist-packages/numpy/core/include \
+  -S /usr/local/opencv4/opencv
+
+  sudo make -j7
+  sudo make install
+  ``` 
+  
+- shファイルの実行はデフォルトで権限がないため、以下のコマンドを実行する。  
+  ```  
+  sudo chmod 777 OpencvInstall.sh
+  ```  
+  - shファイルを実行  
+  ```  
+  OpencvInstall.sh
+  ```  
+
+- 動作確認  
+  以下のコマンドを実行  
+  ```  
+  python3
+  ```  
+  
+  ```  
+  import cv2
+  ```
+
+  これでエラーが出なければインストール成功。  
+
+- 動作確認でエラーが出る場合  
+  上記のimport cv2を実行すると以下のエラーが出る。  
+  <エラー画像挿入>  
+
+  上図のエラー内容は、Opencvを使うためのパッケージが存在しないせいでおこるエラーで
+  このようなエラーがでこのようなエラーが出た場合は、以下のサイトを参考にパッケージのインストールを行う。  
+
+  <参考サイト>  
+  https://www.shangtian.tokyo/entry/2020/01/02/103124?msclkid=3cbfef7fb3bd11eca1390dff498f0039  
+  numpyのパッケージのインストールはこのサイト  
+  https://algorithm.joho.info/programming/python/numpy-core-multiarray-failed-to-import/?msclkid=871cc269b3be11ecbea8b1672457fdd1   
+
+  
