@@ -411,7 +411,7 @@ sudo nano Opencv.py
 以下のソースをコピー  
 (ソースは検討中)  
 
-```  
+```python  
 import cv2
 import time
 import bluetooth
@@ -455,3 +455,4 @@ while(True):
     time.sleep(0.1)
 
 ```  
+
