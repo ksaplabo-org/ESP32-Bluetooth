@@ -210,13 +210,13 @@ ESP32のプログラムが実行され、紐とつながったモータ(Servo)�
   sock.send('on')
   ```  
 
-  ESP32とPCを接続し、Arduino IDEを開き、以下のソースをコピー
+  ESP32とPCを接続し、Arduino IDEを開き、以下のソースをコピー  
    
-  ```
+  ```C#  
   #include <Servo.h>
   #include "BluetoothSerial.h"
 
-　#if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
+  #if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
   #error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
   #endif
 
@@ -256,7 +256,8 @@ ESP32のプログラムが実行され、紐とつながったモータ(Servo)�
     myservo.write(180);
     delay(5);
   }
-  ```
+
+  ```  
 
   以下のコマンドでソースを実行  
 
@@ -312,7 +313,7 @@ ESP32のプログラムが実行され、紐とつながったモータ(Servo)�
           print("顔認識NG")
       time.sleep(0.1)
   ```  
-  
+
 - 動作確認  
   以下のコマンドでソースを実行  
   ```
