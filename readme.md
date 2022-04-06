@@ -187,133 +187,17 @@ ESP32のプログラムが実行され、紐とつながったモータ(Servo)�
 
 <h2 id="content7">顔認識でServoを動かす</h2>  
 
-- ESP32とPCを接続し、Arduino IDEを開き、以下のソースをコピー  
-
-```C#  
-#include "BluetoothSerial.h"
-#include <Servo.h>
-
-#if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
-#error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
-#endif
-
-#define BT_NAME "Servo"
-
-BluetoothSerial SerialBT;
-Servo myservo;
-
-bool isOpen=false;
-int count = 0;
-
-void setup() {
-  Serial.begin(115200);
-  SerialBT.begin(BT_NAME);  
-  myservo.attach(27);
-  Init();
-}
-
-void loop() {
-  String readBuf="";
-  
-  if (SerialBT.available()) {
-    
-    // BlueToothからデータ読み込み
-    readBuf = SerialBT.readString();
-
-    Serial.println(readBuf);
-
-    if (readBuf.startsWith("on") && !isOpen){
-      Open();
-    }
-    if (readBuf.startsWith("off") && isOpen){
-      Close();
-    }
-  }
-  if (isOpen){
-    count = count + 1;
-  } else {
-    count = 0;
-  }
-  if(count > 50){
-    Close();
-    count=0;
-  }
-  delay(30);
-}  
-void Open(){
-  for (int pos = 180; pos >= 0; pos -= 1) { // goes from 0 degrees to 180 degrees
-    // in steps of 1 degree
-    myservo.write(pos);              // tell servo to go to position in variable 'pos'
-    delay(3);                       // waits 15ms for the servo to reach the position
-  }
-  isOpen = true;
-}
-void Close(){
-  for (int pos = 0; pos <= 180; pos += 1) { // goes from 180 degrees to 0 degrees
-    myservo.write(pos);              // tell servo to go to position in variable 'pos'
-    delay(3);                       // waits 15ms for the servo to reach the position
-  }
-  isOpen = false;
-}
-void Init(){
-  myservo.write(180);
-  delay(5);
-}
-
-```  
+- ESP32とPCを接続し、Arduino IDEを開き、以下のソースをコピー(検討中)  
+　[DoorOpener.ino](./DoorOpener.ino)  
 
 - Opencvフォルダ下で以下のファイルを作成する。  
 
 ```  
-sudo nano Opencv.py
+sudo nano DoorOpener.py
 ```  
 
 以下のソースをコピー  
 (ソースは検討中)  
-
-```python  
-import cv2
-import time
-import bluetooth
-
-#開閉状態のフラグ初期化（True：空いている）
-isOpen = False
-
-#ESP32の定義
-server_addr = 'ESP32のMACアドレス' 
-server_port = 1
-
-sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-sock.connect((server_addr, server_port))
-
-#カスケード分類器のパス
-cascade_path="/usr/local/share/opencv4/haarcascades/haarcascade_frontalface_alt.xml"
-
-#カスケード分類器を取得
-cascade=cv2.CascadeClassifier(cascade_path) 
-
-#カメラからの画像データの読み込み
-capture = cv2.VideoCapture(0)
-
-#リアルタイム静止画像の読み取りを繰り返す
-while(True):
-    #フレームの読み取り
-    ret,frame=capture.read()
-
-    #カメラから読み取った画像をグレースケールに変換
-    gray=cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
-
-    #顔の学習データ精査
-    front_face_list=cascade.detectMultiScale(gray,minSize=(50,50))
-    print(front_face_list)
-    #顔と認識する場合は顔認識OKと出力
-    if len(front_face_list) != 0:
-        print("顔認識OK")
-        #紐を引っ張る
-        sock.send('on')
-        time.sleep(3)
-    time.sleep(0.1)
-
-```  
+[DoorOpener.py](./DoorOpener.py)  
 
 - pythonを実行して動作確認
