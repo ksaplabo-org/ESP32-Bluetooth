@@ -88,7 +88,7 @@ ESP32のプログラムが実行され、紐とつながったモータ(Servo)�
   sudo nano OpencvInstall.sh
   ```  
 
-  以下のソースを貼り付ける。
+  以下のソースを貼り付ける。  
   [OpencvInstall.sh](./OpencvInstall.sh)    
   
 - shファイルの実行はデフォルトで権限がないため、以下のコマンドを実行する。  
@@ -150,53 +150,7 @@ ESP32のプログラムが実行され、紐とつながったモータ(Servo)�
   ```  
 
   ESP32とPCを接続し、Arduino IDEを開き、以下のソースをコピー  
-   
-  ```C#  
-  #include <Servo.h>
-  #include "BluetoothSerial.h"
-
-  #if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
-  #error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
-  #endif
-
-  #define BT_NAME "Servo"
-
-  BluetoothSerial SerialBT;
-  Servo myservo; //Servoオブジェクトを作成
-
-  void setup() {
-    myservo.attach(27); //27番ピンにサーボ制御線（黄色）を接続
-    SerialBT.begin(BT_NAME); 
-    Init();
-  }
-
-  void loop() {
-    String readBuf="";
-    
-    if (SerialBT.available()) {
-      
-      // BlueToothからデータ読み込み
-      readBuf = SerialBT.readString();
-
-      if (readBuf.startsWith("on")){
-        Open();
-      }
-    }
-  }
-
-  void Open(){
-  for (int pos = 180; pos >= 0; pos -= 1) { // goes from 0 degrees to 180 degrees
-    // in steps of 1 degree
-    myservo.write(pos);              // tell servo to go to position in variable 'pos'
-    delay(3);                       // waits 15ms for the servo to reach the position
-    }
-  }
-  void Init(){
-    myservo.write(180);
-    delay(5);
-  }
-
-  ```  
+  [BluetoothSample.ino](./BluetoothSample.ino)  
 
   以下のコマンドでソースを実行  
 
@@ -214,44 +168,12 @@ ESP32のプログラムが実行され、紐とつながったモータ(Servo)�
 　Opencvフォルダ下で以下のファイルを作成する。  
 
   ```  
-  sudo nano sample.py
+  sudo nano CameraSample.py
   ```  
 
   以下のソースをコピー  
   (0.1秒毎に画像から顔を認識し、「顔認識OK」か「顔認識NG」をterminal上に出力するプログラム)  
-
-  ```python  
-  import cv2
-  import time
-
-  #カスケード分類器のパス
-  #以下のパスにhaarcascade_frontalface_alt.xmlがなければ、存在するパスを指定してください
-  cascade_path="/usr/local/share/opencv4/haarcascades/haarcascade_frontalface_alt.xml"
-
-  #カスケード分類器を取得
-  cascade=cv2.CascadeClassifier(cascade_path)
-
-  #カメラからの画像データの読み込み
-  capture = cv2.VideoCapture(0)
-
-  #リアルタイム静止画像の読み取りを繰り返す
-  while(True):
-      #フレームの読み取り
-      ret,frame=capture.read()
-
-      #カメラから読み取った画像をグレースケールに変換
-      gray=cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
-
-      #顔の学習データ精査
-      front_face_list=cascade.detectMultiScale(gray,minSize=(50,50))
-
-      #顔と認識する場合は顔認識OKと出力
-      if len(front_face_list) != 0:
-          print("顔認識OK")
-      else:
-          print("顔認識NG")
-      time.sleep(0.1)
-  ```  
+  [CameraSample.py](./CameraSample.py)
 
 - 動作確認  
   以下のコマンドでソースを実行  
