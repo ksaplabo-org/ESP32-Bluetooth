@@ -55,6 +55,7 @@ ESP32のプログラムが実行され、紐とつながったモータ(Servo)�
 - 動作確認  
 
   以下のソースをArduinoIDEにコピー。  
+  [ServoSample.ino](./ServoSample.ino)  
 
   ```C#  
   #include <Servo.h>
