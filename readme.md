@@ -196,8 +196,8 @@ ESP32のプログラムが実行され、紐とつながったモータ(Servo)�
 sudo nano DoorOpener.py
 ```  
 
-以下のソースをコピー  
-(ソースは検討中)  
-[DoorOpener.py](./DoorOpener.py)  
+  以下のソースをコピー  
+  (ソースは検討中)  
+  [DoorOpener.py](./DoorOpener.py)  
 
 - pythonを実行して動作確認
