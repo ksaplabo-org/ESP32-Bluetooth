@@ -192,9 +192,9 @@ ESP32のプログラムが実行され、紐とつながったモータ(Servo)�
 
 - Opencvフォルダ下で以下のファイルを作成する。  
 
-```  
-sudo nano DoorOpener.py
-```  
+  ```  
+  sudo nano DoorOpener.py
+  ```  
 
   以下のソースをコピー  
   (ソースは検討中)  
