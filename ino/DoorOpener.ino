@@ -1,5 +1,6 @@
 #include "BluetoothSerial.h"
 #include <Servo.h>
+#include <string.h>
 
 #if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
 #error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
@@ -28,13 +29,12 @@ void loop() {
     // BlueToothからデータ読み込み
     readBuf = SerialBT.readString();
 
+    // シリアルモニタに受け取ったデータを表示
     Serial.println(readBuf);
+    readBuf = readBuf.substring(0,2);
 
     if (readBuf.startsWith("on") && !isOpen){
       Open();
-    }
-    if (readBuf.startsWith("off") && isOpen){
-      Close();
     }
   }
   if (isOpen){
@@ -46,7 +46,7 @@ void loop() {
     Close();
     count=0;
   }
-  delay(30);
+  delay(20);
 }  
 void Open(){
   for (int pos = 180; pos >= 0; pos -= 1) { // goes from 0 degrees to 180 degrees

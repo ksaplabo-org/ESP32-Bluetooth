@@ -2,13 +2,16 @@ import cv2
 import time
 import bluetooth
 
-#開閉状態のフラグ初期化（True：空いている）
-isOpen = False
+#変数宣言
+isSend = False   #送信フラグ
+count = 0        #カウント値
+fps = 30         #カメラのFPS
 
 #ESP32の定義
-server_addr = 'ESP32のMACアドレス' 
+server_addr = '7C:9E:BD:48:46:6A' #MACアドレス
 server_port = 1
 
+#Bluetoothライブラリの初期化
 sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
 sock.connect((server_addr, server_port))
 
@@ -16,10 +19,13 @@ sock.connect((server_addr, server_port))
 cascade_path="/usr/local/share/opencv4/haarcascades/haarcascade_frontalface_alt.xml"
 
 #カスケード分類器を取得
-cascade=cv2.CascadeClassifier(cascade_path) 
+cascade=cv2.CascadeClassifier(cascade_path)
 
 #カメラからの画像データの読み込み
 capture = cv2.VideoCapture(0)
+
+#FPSの設定
+capture.set(cv2.CAP_PROP_FPS, fps)
 
 #リアルタイム静止画像の読み取りを繰り返す
 while(True):
@@ -31,11 +37,22 @@ while(True):
 
     #顔の学習データ精査
     front_face_list=cascade.detectMultiScale(gray,minSize=(50,50))
-    print(front_face_list)
-    #顔と認識する場合は顔認識OKと出力
+
+    #顔認識した場合
     if len(front_face_list) != 0:
-        print("顔認識OK")
-        #紐を引っ張る
-        sock.send('on')
-        time.sleep(3)
-    time.sleep(0.1)
+        #ソケット送信
+        if not(isSend):
+            isSend = True
+            count = 0
+            sock.send('on')
+        #約７秒間はソケット送信しない
+        if count < 70:
+            count = count + 1
+        else:
+            isSend = False
+    #顔認識してない場合
+    else:
+        count = 0
+        isSend = False
+    time.sleep(fps/1000)
+
