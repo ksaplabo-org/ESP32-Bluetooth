@@ -55,7 +55,7 @@ ESP32のプログラムが実行され、紐とつながったモータ(Servo)�
 - 動作確認  
 
   以下のソースをArduinoIDEにコピー。  
-  [ServoSample.ino](./ServoSample.ino)  
+  [ServoSample.ino](./ino/ServoSample.ino)  
 
   ```C#  
   #include <Servo.h>
@@ -150,7 +150,7 @@ ESP32のプログラムが実行され、紐とつながったモータ(Servo)�
   ```  
 
   ESP32とPCを接続し、Arduino IDEを開き、以下のソースをコピー  
-  [BluetoothSample.ino](./BluetoothSample.ino)  
+  [BluetoothSample.ino](./ino/BluetoothSample.ino)  
 
   以下のコマンドでソースを実行  
 
@@ -173,7 +173,7 @@ ESP32のプログラムが実行され、紐とつながったモータ(Servo)�
 
   以下のソースをコピー  
   (0.1秒毎に画像から顔を認識し、「顔認識OK」か「顔認識NG」をterminal上に出力するプログラム)  
-  [CameraSample.py](./CameraSample.py)
+  [CameraSample.py](./py/CameraSample.py)
 
 - 動作確認  
   以下のコマンドでソースを実行  
@@ -188,7 +188,7 @@ ESP32のプログラムが実行され、紐とつながったモータ(Servo)�
 <h2 id="content7">顔認識でServoを動かす</h2>  
 
 - ESP32とPCを接続し、Arduino IDEを開き、以下のソースをコピー(検討中)  
-　[DoorOpener.ino](./DoorOpener.ino)  
+　[DoorOpener.ino](./ino/DoorOpener.ino)  
 
 - Opencvフォルダ下で以下のファイルを作成する。  
 
@@ -198,6 +198,6 @@ ESP32のプログラムが実行され、紐とつながったモータ(Servo)�
 
   以下のソースをコピー  
   (ソースは検討中)  
-  [DoorOpener.py](./DoorOpener.py)  
+  [DoorOpener.py](./py/DoorOpener.py)  
 
 - pythonを実行して動作確認
