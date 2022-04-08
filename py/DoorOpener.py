@@ -3,9 +3,31 @@ import time
 import bluetooth
 
 #変数宣言
-isSend = False   #送信フラグ
-count = 0        #カウント値
-fps = 30         #カメラのFPS
+isSend = False                              #送信フラグ
+count = 0                                   #カウント値
+fps = 30                                    #カメラのFPS
+list = [False, False, False, False, False]  #顔認識5回分の結果記録配列
+
+#配列操作の関数(引数：顔認証OK→True、顔認証NG→False)
+def ListChange(bool):
+    global list
+    list.pop(0)
+    list.insert(4, bool)
+
+#Bluetootshsソケット送信関数
+def SockSend():
+    global isSend
+    global count
+
+    #一度'on'を送信したら約7秒間は顔認証しても'on'を送らない
+    if not(isSend):
+        isSend = True
+        count = 0
+        sock.send('on')
+    if count < 70:
+        count = count + 1
+    else:
+        isSend = False
 
 #ESP32の定義
 server_addr = '7C:9E:BD:48:46:6A' #MACアドレス
@@ -40,19 +62,25 @@ while(True):
 
     #顔認識した場合
     if len(front_face_list) != 0:
+        #配列変更
+        ListChange(True)
         #ソケット送信
-        if not(isSend):
-            isSend = True
-            count = 0
-            sock.send('on')
-        #約７秒間はソケット送信しない
-        if count < 70:
-            count = count + 1
-        else:
-            isSend = False
+        SockSend()
+
     #顔認識してない場合
     else:
-        count = 0
-        isSend = False
+        #前5回の顔判定でOKがある場合
+        if list.count(True) > 0:
+            #ソケット送信
+            SockSend()
+            #配列変更
+            ListChange(False)
+        else:
+            #配列変更
+            ListChange(False)
+            count = 0
+            isSend = False
+    
+    #カメラのFPSと同じ速度でcapture.readを行う。
     time.sleep(fps/1000)
 
