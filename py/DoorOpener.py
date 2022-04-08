@@ -3,16 +3,21 @@ import time
 import bluetooth
 
 #変数宣言
-isSend = False                              #送信フラグ
-count = 0                                   #カウント値
-fps = 30                                    #カメラのFPS
-list = [False, False, False, False, False]  #顔認識5回分の結果記録配列
+isSend = False      #送信フラグ
+count = 0           #カウント値
+fps = 30            #カメラのFPS
+list = []           #顔認識5回分の結果記録配列
+slowcount = 5       #顔認識していないことをスルーする回数
+
+#配列の初期化
+for num in range(slowcount):
+    list = list + [False]
 
 #配列操作の関数(引数：顔認証OK→True、顔認証NG→False)
 def ListChange(bool):
     global list
     list.pop(0)
-    list.insert(4, bool)
+    list.insert(slowcount - 1, bool)
 
 #Bluetootshsソケット送信関数
 def SockSend():
