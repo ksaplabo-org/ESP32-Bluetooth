@@ -16,7 +16,8 @@
 ↓  
 顔を認識したことをRasPiからESP32へ通知。  
 ↓  
-ESP32のプログラムが実行され、紐とつながったモータ(Servo)を動かす  
+ESP32のプログラムが実行され、紐とつながったモータ(Servo)を動かす
+また、モータが動いた日時をDynamoDBへ登録  
 
 <h2 id="content2">配線接続</h2>  
 
@@ -193,13 +194,21 @@ ESP32のプログラムが実行され、紐とつながったモータ(Servo)�
 - Opencvフォルダ下で以下のファイルを作成する。  
 
   ```  
-  sudo nano DoorOpener.py
+  sudo nano main.py
+  sudo nano alert.py
+  sudo nano imager.py
+  sudo nano logger.py
+  sudo nano opener.py
+
   ```  
 
-  以下のソースをコピー  
-  (ソースは検討中)  
-  [DoorOpener.py](./py/DoorOpener.py)  
+  以下のソースをそれぞれのファイルにコピー  
+  [main.py](./py/mian.py)  
+  [alert.py](./py/mian.py)  
+  [imager.py](./py/mian.py)  
+  [logger.py](./py/mian.py)  
+  [opener.py](./py/mian.py)  
 
 - pythonを実行して動作確認
-  aaa
+  
   
