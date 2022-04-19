@@ -201,3 +201,5 @@ ESP32のプログラムが実行され、紐とつながったモータ(Servo)�
   [DoorOpener.py](./py/DoorOpener.py)  
 
 - pythonを実行して動作確認
+  aaa
+  
