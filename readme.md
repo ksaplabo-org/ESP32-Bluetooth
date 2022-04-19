@@ -7,6 +7,7 @@
 - [PythonでBluetooth通信](#content5)  
 - [Raspberry Piとカメラを使って顔検出](#content6)  
 - [顔認識でServoを動かす](#content7)  
+- [残課題](#content8)  
 
 <h2 id="content1">概要説明</h2>  
 
@@ -211,12 +212,19 @@ ESP32のプログラムが実行され、紐とつながったモータ(Servo)�
   ```  
 
   以下のソースをそれぞれのファイルにコピー  
-  [main.py](./py/mian.py)  
-  [alert.py](./py/mian.py)  
-  [imager.py](./py/mian.py)  
-  [logger.py](./py/mian.py)  
-  [opener.py](./py/mian.py)  
+  [main.py](./py/mian.py)    →　実行クラス
+  [alert.py](./py/mian.py)   →　LEDの操作
+  [imager.py](./py/mian.py)  →　画像解析
+  [logger.py](./py/mian.py)  →　MQLL通信
+  [opener.py](./py/mian.py)  →　モータ操作
 
 - pythonを実行して動作確認
   
-  
+<h2 id="content8">残課題</h2>  
+
+- Bluetooth接続が切れた場合、5秒程のタイムラグがあり、システムが終了する。  
+- カメラが切断した後、再接続しても復帰しない  
+- マスクをつけた時の反応が悪い  
+- Bluetooth通信の暗号化ができていない  
+- (検討)顔認証したときのLEDが分かりずらい  
+  例えば、LEDを緑色で常時点灯させ、顔認証した時に赤色に変更する。とか。  
