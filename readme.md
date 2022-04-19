@@ -10,7 +10,7 @@
 
 <h2 id="content1">目的説明</h2>  
 
-<img alt="OSインストーラ画像" src="./img/概要図.png" width="800" height="400">  
+<img alt="OSインストーラ画像" src="./img/概要図.png" width="1000" height="600">  
 
 事務所から外へ出るときの紐を自動で引っ張る仕組みを実装する。  
    
