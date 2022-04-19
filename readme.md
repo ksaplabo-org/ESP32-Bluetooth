@@ -1,6 +1,6 @@
 # ESP32にBluetooth接続しServoを動かす  
 ## 目次  
-- [目的説明](#content1)  
+- [概要説明](#content1)  
 - [配線接続](#content2)  
 - [ESP32からServoを動かす](#content3)  
 - [Raspberry PiにOpencvをインストール](#content4)
@@ -8,7 +8,7 @@
 - [Raspberry Piとカメラを使って顔検出](#content6)  
 - [顔認識でServoを動かす](#content7)  
 
-<h2 id="content1">目的説明</h2>  
+<h2 id="content1">概要説明</h2>  
 
 ![全景](./img/概要図.png)  
 
