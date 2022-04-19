@@ -198,7 +198,7 @@ ESP32のプログラムが実行され、紐とつながったモータ(Servo)�
 
 <h2 id="content7">顔認識でServoを動かす</h2>  
 
-- ESP32とPCを接続し、Arduino IDEを開き、以下のソースをコピー(検討中)  
+- ESP32とPCを接続し、Arduino IDEを開き、以下のソースをコピー  
 　[DoorOpener.ino](./ino/DoorOpener.ino)  
 
 - Opencvフォルダ下で以下のファイルを作成する。  
