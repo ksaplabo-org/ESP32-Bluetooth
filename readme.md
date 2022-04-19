@@ -212,11 +212,11 @@ ESP32のプログラムが実行され、紐とつながったモータ(Servo)�
   ```  
 
   以下のソースをそれぞれのファイルにコピー  
-  [main.py](./py/mian.py)    →　実行クラス
-  [alert.py](./py/mian.py)   →　LEDの操作
-  [imager.py](./py/mian.py)  →　画像解析
-  [logger.py](./py/mian.py)  →　MQLL通信
-  [opener.py](./py/mian.py)  →　モータ操作
+  [main.py](./py/mian.py)    →　実行クラス  
+  [alert.py](./py/mian.py)   →　LEDの操作  
+  [imager.py](./py/mian.py)  →　画像解析  
+  [logger.py](./py/mian.py)  →　MQLL通信  
+  [opener.py](./py/mian.py)  →　モータ操作  
 
 - pythonを実行して動作確認
   
