@@ -52,6 +52,11 @@ ESP32のプログラムが実行され、紐とつながったモータ(Servo)�
     
     検索欄にESPを入力し、「esp32」をインストールする。  
     <img alt="OSインストーラ画像" src="./img/スクリーンショット-2021-08-01-140620.png" width="700" height="400">   
+
+  - Servoライブラリの取得  
+    ツール > ライブラリを管理... を開き  
+    検索欄にservoESPを入力し、「ServoESP32」をインストールする。  
+    <img alt="OSインストーラ画像" src="./img/スクリーンショット.png" width="700" height="400">   
   
   -  ボードを選択  
     ツール  > ボード > ESP32 Arduino > ESP32 Dev Module を選択  
