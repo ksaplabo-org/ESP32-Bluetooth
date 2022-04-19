@@ -10,6 +10,8 @@
 
 <h2 id="content1">目的説明</h2>  
 
+<img alt="OSインストーラ画像" src="./img/概要図.png" width="500" height="350">  
+
 事務所から外へ出るときの紐を自動で引っ張る仕組みを実装する。  
    
 ドア付近に設置するカメラが顔を認識。  
@@ -18,6 +20,8 @@
 ↓  
 ESP32のプログラムが実行され、紐とつながったモータ(Servo)を動かす
 また、モータが動いた日時をDynamoDBへ登録  
+
+
 
 <h2 id="content2">配線接続</h2>  
 
@@ -199,7 +203,6 @@ ESP32のプログラムが実行され、紐とつながったモータ(Servo)�
   sudo nano imager.py
   sudo nano logger.py
   sudo nano opener.py
-
   ```  
 
   以下のソースをそれぞれのファイルにコピー  
