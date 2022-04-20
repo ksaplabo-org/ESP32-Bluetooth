@@ -19,7 +19,7 @@
 ↓  
 顔を認識したことをRasPiからESP32へ通知。  
 ↓  
-ESP32のプログラムが実行され、紐とつながったモータ(Servo)を動かす
+ESP32のプログラムが実行され、紐とつながったモータ(Servo)を動かす。  
 また、モータが動いた日時をDynamoDBへ登録  
 
 
@@ -200,6 +200,10 @@ ESP32のプログラムが実行され、紐とつながったモータ(Servo)�
 
 - ESP32とPCを接続し、Arduino IDEを開き、以下のソースをコピー  
 　[DoorOpener.ino](./ino/DoorOpener.ino)  
+
+- RaspiとLEDライトの配線は以下のとおり行う。  
+
+<img alt="OSインストーラ画像" src="./img/LED配線.png" width="300" height="700">  
 
 - Opencvフォルダ下で以下のファイルを作成する。  
 
