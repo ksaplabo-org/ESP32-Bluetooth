@@ -203,7 +203,7 @@ ESP32のプログラムが実行され、紐とつながったモータ(Servo)�
 
 - RaspiとLEDライトの配線は以下のとおり行う。  
 
-<img alt="OSインストーラ画像" src="./img/LED配線.png" width="300" height="700">  
+<img alt="OSインストーラ画像" src="./img/LED配線.png" width="500" height="500">  
 
 - Opencvフォルダ下で以下のファイルを作成する。  
 
