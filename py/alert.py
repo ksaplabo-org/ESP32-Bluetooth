@@ -2,7 +2,7 @@ import RPi.GPIO as GPIO
 
 class Alert():
     """警告を行うクラス"""
-    
+
     def __init__(self, type, color = "NONE"):
         if type == "LED":
             self.__alert = LedLigth(color)
@@ -10,17 +10,24 @@ class Alert():
     def __del__(self):
         del self.__alert
 
-    #アラートを始めるメソッド
     def start_alert(self):
+        """アラートを始めるメソッド
+        """
         self.__alert.start_led()
-    #アラートを止めるメソッド
+
     def stop_alert(self):
+        """アラートを止めるメソッド
+        """
         self.__alert.stop_led()
 
-    #三色LED用のメソッド
     def start_center_alert(self):
+        """三色LED用のメソッド
+        """
         self.__alert.start_center_led()
+
     def stop_center_alert(self):
+        """三色LED用のメソッド
+        """
         self.__alert.stop_center_led()
 
 class LedLigth():
@@ -54,21 +61,24 @@ class LedLigth():
     def __del__(self):
         GPIO.cleanup()
 
-    #LEDを点灯
     def start_led(self):
-        #LEDをつける
+        """LEDを点灯
+        """
         GPIO.output(self.__gpio_no, GPIO.HIGH)
 
-    #LEDを消灯
     def stop_led(self):
+        """LEDを消灯
+        """
         GPIO.output(self.__gpio_no, GPIO.LOW)
 
-    #CENTERの時はGREEN→BLUEに変色
     def start_center_led(self):
+        """CENTERの時は3色LEDをGREEN→BLUEに変色
+        """
         GPIO.output(self.__gpio_no, False)
         GPIO.output(self.CENTER_BLUE_LED, True)
 
     def stop_center_led(self):
+        """3色LEDをBLUE→GREENに変色
+        """
         GPIO.output(self.CENTER_BLUE_LED, False)
         GPIO.output(self.__gpio_no, True)
-

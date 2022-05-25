@@ -26,9 +26,10 @@ class Opener():
     def __del__(self):
         del self.__bl_err_alert
 
-    #ドア開錠
     def open(self):
-        
+        """ドア開錠
+        """
+
         #一度openしてから約7秒過ぎている場合
         if self.__count_connection_interval():
 
@@ -36,7 +37,7 @@ class Opener():
                 #ソケット送信
                 self.__ble_socket.send('on')
                 print('sendON')
-            except:    
+            except Exception:
                 print("send Error!")
                 self.__connect_ble(self.__mac_addr_esp, self.__port_esp)
                 if self.__is_connected:
@@ -48,14 +49,14 @@ class Opener():
 
     #接続(接続できるまでループする)
     def __connect_ble(self, addr, port):
-        
+
         try:
             self.__ble_socket = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
             self.__ble_socket.connect((addr, port))
 
             self.__is_connected = True
             self.__bl_err_alert.stop_alert()
-        except :
+        except Exception:
             print('接続できるESP32がありません')
             self.__is_connected = False
             self.__bl_err_alert.start_alert()
@@ -67,7 +68,7 @@ class Opener():
 
         if self.__cnt_ble_buffer == 0:
             ret = True
-        
+
         self.__cnt_ble_buffer = self.__cnt_ble_buffer + 1
 
         if self.__cnt_ble_buffer > 160:
@@ -75,6 +76,7 @@ class Opener():
 
         return ret
 
-    #カウンターリセット
     def reset_counter(self):
+        """カウンターリセット
+        """
         self.__cnt_ble_buffer = 0

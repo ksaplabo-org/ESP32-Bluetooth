@@ -1,4 +1,5 @@
 from this import d
+
 import paho.mqtt.client
 import json
 import ssl
@@ -16,13 +17,15 @@ class Logger():
     def __del__(self):
         del self.__mqtt
 
-    #ログの登録
     def write_log(self):
+        """ログの登録
+        """
+
         #メッセージを作成
         tmstr = "{0:%Y-%m-%d %H:%M:%S}".format(datetime.datetime.now())
         json_msg = json.dumps({"GetDateTime": tmstr})
         #MQTT送信
-        self.__mqtt.publish_mqtt(json_msg)         
+        self.__mqtt.publish_mqtt(json_msg)
 
 class Mqtt():
     """データをIoT Coreでpublishするクラス"""
@@ -35,7 +38,7 @@ class Mqtt():
     MQTT_ROOTCA = "/home/pi/Downloads/AmazonRootCA1.pem"
     MQTT_CERT = "/home/pi/Downloads/2f8336dd1478dab6620ae585c583f4bbd851e1729eeecf119f5cd2e2e0ce8053-certificate.pem.crt"
     MQTT_PRIKEY = "/home/pi/Downloads/2f8336dd1478dab6620ae585c583f4bbd851e1729eeecf119f5cd2e2e0ce8053-private.pem.key"
-    
+
     def __init__(self):
 
         self.__is_connected = False
@@ -44,27 +47,34 @@ class Mqtt():
         self.__client = paho.mqtt.client.Client()
         self.__client.on_connect = self.__on_connect
         self.__client.on_disconnect = self.__on_disconnect
-        self.__client.tls_set(self.MQTT_ROOTCA, certfile=self.MQTT_CERT, keyfile=self.MQTT_PRIKEY, cert_reqs=ssl.CERT_REQUIRED, tls_version=ssl.PROTOCOL_TLSv1_2, ciphers=None)
-        
+        self.__client.tls_set(self.MQTT_ROOTCA,
+                              certfile=self.MQTT_CERT,
+                              keyfile=self.MQTT_PRIKEY,
+                              cert_reqs=ssl.CERT_REQUIRED,
+                              tls_version=ssl.PROTOCOL_TLSv1_2,
+                              ciphers=None)
+
         #アラートクラスのインスタンス
         self.__alert_mqtt_err = alert.Alert("LED","RED")
-    
+
     def __del__(self):
         del self.__alert_mqtt_err
         self.__client.disconnect()
 
-    #MQTT接続
     def connect_mqtt(self):
+        """MQTT接続
+        """
+
         # Connect To Mqtt Broker(aws)
         self.__client.loop_start()
 
         try:
             self.__client.connect(self.AWSIOT_ENDPOINT, port=self.MQTT_PORT, keepalive=5)
-            self.__alert_mqtt_err.stop_alert()    
+            self.__alert_mqtt_err.stop_alert()
             self.__is_connected = True
-        except:
+        except Exception:
             print("Wi-Fi接続が切れています")
-            self.__alert_mqtt_err.start_alert()    
+            self.__alert_mqtt_err.start_alert()
             self.__is_connected = False
 
     #MQTT接続イベント
@@ -81,9 +91,11 @@ class Mqtt():
         self.__alert_mqtt_err.start_alert()
 
     def publish_mqtt(self, json_msg): 
-        #接続
-        if self.__is_connected == False:
+        """IoT Coreへパブリッシュを行う
+        """
+
+        if self.__is_connected is False:
             self.connect_mqtt()
         #MQTT送信
         if self.__is_connected:
-           self.__client.publish(self.MQTT_TOPIC_PUB ,json_msg, qos=1)
+            self.__client.publish(self.MQTT_TOPIC_PUB ,json_msg, qos=1)

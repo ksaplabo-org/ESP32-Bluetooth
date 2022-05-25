@@ -1,11 +1,10 @@
-#DoorOpener Main処理
-
 from email.headerregistry import Address
+
 import time
 import logger           #ログ登録クラス
 import opener           #ドア開錠クラス
 import imager           #画像解析クラス
-                   
+
 __logger = logger.Logger()
 __opener = opener.Opener(ADDR='78:21:84:80:2f:aa',PORT=1)
 __imager = imager.ImgAnalysis()
@@ -17,7 +16,7 @@ try:
         try:
             #顔認証行う
             result = __imager.analyze_image()
-        except:
+        except Exception:
             #異常終了の場合
             print('CameraErr')
             time.sleep(1)
@@ -25,11 +24,11 @@ try:
             #インスタンスを削除し、再生成
             del __imager
             __imager = imager.ImgAnalysis()
-            
+
             continue
-        
+
         #顔認識した場合
-        if result == True:
+        if result is True:
             #print("顔認識OK")
             #ドアOpen
             if __opener.open():
@@ -41,7 +40,7 @@ try:
             #print("顔認証NG")
             #初期化
             __opener.reset_counter()
-except:
+except Exception:
     del __opener
     del __logger
     del __imager
