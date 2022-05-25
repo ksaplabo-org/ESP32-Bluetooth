@@ -3,85 +3,78 @@ import alert
 import time
 
 class Opener():
-
-    is_send = True
-    cnt = 0
-    
-    global addr
-    global port
-    global bl_err_alert
-    global btsocket
-    global is_connected
+    """ドアのカギを開錠するクラス"""
 
     def __init__(self, **env_dict):
 
-        self.addr = env_dict.get("addr")
-        self.port = env_dict.get("port")
+        #対象となるESPのMACアドレスとポート番号取得
+        self.__mac_addr_esp = env_dict.get("ADDR")
+        self.__port_esp = env_dict.get("PORT")
+
+        #接続フラグの初期化
+        self.__is_connected = False
+
+        #Bluetooth接続のバッファーカウンタの初期化
+        self.__cnt_ble_buffer = 0
+
         #alertクラスのインスタンス
-        self.bl_err_alert = alert.Alert("LED", "BLUE")
+        self.__bl_err_alert = alert.Alert("LED", "BLUE")
 
         #Bluetooth接続
-        self.__connect(self.addr, self.port)
+        self.__connect_ble(self.__mac_addr_esp, self.__port_esp)
 
     def __del__(self):
-        del self.bl_err_alert
+        del self.__bl_err_alert
 
     #ドア開錠
     def open(self):
         
         #一度openしてから約7秒過ぎている場合
-        if self.count_check():
+        if self.__count_connection_interval():
 
             try:
                 #ソケット送信
-                self.btsocket.send('on')
+                self.__ble_socket.send('on')
                 print('sendON')
             except:    
                 print("send Error!")
-                self.__connect(self.addr, self.port)
-                if self.is_connected:
+                self.__connect_ble(self.__mac_addr_esp, self.__port_esp)
+                if self.__is_connected:
                     print("Connected!")
-                    self.btsocket.send('on')
-            
-            #Bluetooth切断
-            #self.__disconnect(btsocket)
+                    self.__ble_socket.send('on')
 
             return True
         return False
 
     #接続(接続できるまでループする)
-    def __connect(self, addr, port):
+    def __connect_ble(self, addr, port):
         
         try:
-            self.btsocket = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-            self.btsocket.connect((addr, port))
+            self.__ble_socket = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
+            self.__ble_socket.connect((addr, port))
 
-            self.is_connected = True
-            self.bl_err_alert.stop()
+            self.__is_connected = True
+            self.__bl_err_alert.stop_alert()
         except :
             print('接続できるESP32がありません')
-            self.is_connected = False
-            self.bl_err_alert.start()
-
-    #切断
-    #def __disconnect(self, sock):
-        #sock.close()
+            self.__is_connected = False
+            self.__bl_err_alert.start_alert()
 
     #約7秒を数えるメソッド(戻り値isSend：Ture→7秒経過、False→7秒未経過)
-    def count_check(self):
+    def __count_connection_interval(self):
 
         ret = False
 
-        if self.cnt == 0:
+        if self.__cnt_ble_buffer == 0:
             ret = True
         
-        self.cnt = self.cnt + 1
+        self.__cnt_ble_buffer = self.__cnt_ble_buffer + 1
 
-        if self.cnt > 160:
-            self.reset()
+        if self.__cnt_ble_buffer > 160:
+            self.reset_counter()
 
         return ret
 
     #カウンターリセット
-    def reset(self):
-        self.cnt = 0
+    def reset_counter(self):
+        self.__cnt_ble_buffer = 0

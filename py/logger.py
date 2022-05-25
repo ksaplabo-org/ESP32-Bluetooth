@@ -1,7 +1,3 @@
-#private関数は__
-#メソッド、変数の頭は小文字、クラス名は
-#pythonの命名規則
-
 from this import d
 import paho.mqtt.client
 import json
@@ -10,33 +6,26 @@ import datetime
 import time
 import alert
 
-#openした時のログを保存するクラス
-#非同期で動かしたいクラス↓
 class Logger():
-
-    global mqtt
+    """現在時刻を登録するクラス"""
 
     def __init__(self):
-        self.mqtt = Mqtt()
-        self.mqtt.connect()
+        self.__mqtt = Mqtt()
+        self.__mqtt.connect_mqtt()
 
     def __del__(self):
-        del self.mqtt
+        del self.__mqtt
 
     #ログの登録
-    def write(self):
+    def write_log(self):
         #メッセージを作成
         tmstr = "{0:%Y-%m-%d %H:%M:%S}".format(datetime.datetime.now())
         json_msg = json.dumps({"GetDateTime": tmstr})
         #MQTT送信
-        self.mqtt.publish(json_msg)         
+        self.__mqtt.publish_mqtt(json_msg)         
 
-#MQTT通信により、日時をDynamoDBに登録するクラス
 class Mqtt():
-
-    global client
-    global mqtt_err_alert
-    global is_connected
+    """データをIoT Coreでpublishするクラス"""
 
     #変数宣言
     AWSIOT_ENDPOINT = 'alij9rhkrwgll-ats.iot.ap-northeast-1.amazonaws.com'
@@ -49,52 +38,52 @@ class Mqtt():
     
     def __init__(self):
 
-        self.is_connected = False
+        self.__is_connected = False
 
         # Mqtt Client Initialize
-        self.client = paho.mqtt.client.Client()
-        self.client.on_connect = self.__on_connect
-        self.client.on_disconnect = self.__on_disconnect
-        self.client.tls_set(self.MQTT_ROOTCA, certfile=self.MQTT_CERT, keyfile=self.MQTT_PRIKEY, cert_reqs=ssl.CERT_REQUIRED, tls_version=ssl.PROTOCOL_TLSv1_2, ciphers=None)
+        self.__client = paho.mqtt.client.Client()
+        self.__client.on_connect = self.__on_connect
+        self.__client.on_disconnect = self.__on_disconnect
+        self.__client.tls_set(self.MQTT_ROOTCA, certfile=self.MQTT_CERT, keyfile=self.MQTT_PRIKEY, cert_reqs=ssl.CERT_REQUIRED, tls_version=ssl.PROTOCOL_TLSv1_2, ciphers=None)
         
         #アラートクラスのインスタンス
-        self.mqtt_err_alert = alert.Alert("LED","RED")
+        self.__alert_mqtt_err = alert.Alert("LED","RED")
     
     def __del__(self):
-        del mqtt_err_alert
-        self.client.disconnect()
+        del self.__alert_mqtt_err
+        self.__client.disconnect()
 
-    #初期接続
-    def connect(self):
+    #MQTT接続
+    def connect_mqtt(self):
         # Connect To Mqtt Broker(aws)
-        self.client.loop_start()
+        self.__client.loop_start()
 
         try:
-            self.client.connect(self.AWSIOT_ENDPOINT, port=self.MQTT_PORT, keepalive=5)
-            self.mqtt_err_alert.stop()    
-            self.is_connected = True
+            self.__client.connect(self.AWSIOT_ENDPOINT, port=self.MQTT_PORT, keepalive=5)
+            self.__alert_mqtt_err.stop_alert()    
+            self.__is_connected = True
         except:
             print("Wi-Fi接続が切れています")
-            self.mqtt_err_alert.start()    
-            self.is_connected = False
+            self.__alert_mqtt_err.start_alert()    
+            self.__is_connected = False
 
     #MQTT接続イベント
     def __on_connect(self, client, userdata, flags, rc):
-        self.is_connected = True
+        self.__is_connected = True
         #警告アラートを止める
-        self.mqtt_err_alert.stop()
+        self.__alert_mqtt_err.stop_alert()
 
     #MQTT切断イベント
     def __on_disconnect(self, client, userdata, msg):
         print("MQTT切断")
-        self.is_connected = False
+        self.__is_connected = False
         #警告アラートをスタートする
-        self.mqtt_err_alert.start()
+        self.__alert_mqtt_err.start_alert()
 
-    def publish(self, json_msg): 
+    def publish_mqtt(self, json_msg): 
         #接続
-        if self.is_connected == False:
-            self.connect()
+        if self.__is_connected == False:
+            self.connect_mqtt()
         #MQTT送信
-        if self.is_connected:
-           self.client.publish(self.MQTT_TOPIC_PUB ,json_msg, qos=1)
+        if self.__is_connected:
+           self.__client.publish(self.MQTT_TOPIC_PUB ,json_msg, qos=1)

@@ -1,29 +1,30 @@
-#処理はなるべく止めないように
+#DoorOpener Main処理
+
+from email.headerregistry import Address
 import time
 import logger           #ログ登録クラス
 import opener           #ドア開錠クラス
 import imager           #画像解析クラス
-
-#各クラスのインスタンス生成                        
-_logger = logger.Logger()
-_opener = opener.Opener(addr='78:21:84:80:2f:aa',port=1)
-_imager = imager.ImgAnalysis()
+                   
+__logger = logger.Logger()
+__opener = opener.Opener(ADDR='78:21:84:80:2f:aa',PORT=1)
+__imager = imager.ImgAnalysis()
 
 try:
     #リアルタイム静止画像の読み取りを繰り返す
     while(True):
 
-        #顔認証行う
         try:
-            result = _imager.img_analysis()
+            #顔認証行う
+            result = __imager.analyze_image()
         except:
             #異常終了の場合
             print('CameraErr')
             time.sleep(1)
 
             #インスタンスを削除し、再生成
-            del _imager
-            _imager = imager.ImgAnalysis()
+            del __imager
+            __imager = imager.ImgAnalysis()
             
             continue
         
@@ -31,16 +32,16 @@ try:
         if result == True:
             #print("顔認識OK")
             #ドアOpen
-            if _opener.open():
+            if __opener.open():
                 #Openした時のログを保持
-                _logger.write()
+                __logger.write_log()
 
         #顔認証してない場合
         else:
             #print("顔認証NG")
             #初期化
-            _opener.reset()
+            __opener.reset_counter()
 except:
-    del _opener
-    del _logger
-    del _imager
+    del __opener
+    del __logger
+    del __imager

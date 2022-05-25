@@ -1,82 +1,74 @@
 import RPi.GPIO as GPIO
 
-#LEDに関するクラス
 class Alert():
-
-    global alert
-
-    #コンストラクタ
+    """警告を行うクラス"""
+    
     def __init__(self, type, color = "NONE"):
         if type == "LED":
-            self.alert = LedLigth(color)
+            self.__alert = LedLigth(color)
 
     def __del__(self):
-        del self.alert
+        del self.__alert
 
     #アラートを始めるメソッド
-    def start(self):
-        self.alert.start()
+    def start_alert(self):
+        self.__alert.start_led()
     #アラートを止めるメソッド
-    def stop(self):
-        self.alert.stop()
+    def stop_alert(self):
+        self.__alert.stop_led()
 
-    def center_start(self):
-        self.alert.center_start()
-    def center_stop(self):
-        self.alert.center_stop()
+    #三色LED用のメソッド
+    def start_center_alert(self):
+        self.__alert.start_center_led()
+    def stop_center_alert(self):
+        self.__alert.stop_center_led()
 
-#LEDライトを使用するクラス
 class LedLigth():
+    """LEDを扱うクラス"""
 
     #変数宣言
     CENTER_GREEN_LED = 27   #GPIOナンバー
-    CENTER_BLUE_LED = 22     #GPIOナンバー
+    CENTER_BLUE_LED = 22    #GPIOナンバー
     RED_LED = 26            #GPIOナンバー
     GREEN_LED = 19          #GPIOナンバー
     BLUE_LED = 6            #GPIOナンバー
 
-    global color
-    global gpio_no
-    global gpio_no1
-
-    #コンストラクタ
     def __init__(self, color):
         GPIO.setmode(GPIO.BCM)
         if color == "CENTER":
-            self.gpio_no = self.CENTER_GREEN_LED
-            self.gpio_no1 = self.CENTER_BLUE_LED
+            self.__gpio_no = self.CENTER_GREEN_LED
+            GPIO.setup(self.CENTER_BLUE_LED, GPIO.OUT)
         elif color == "RED":
-            self.gpio_no = self.RED_LED
+            self.__gpio_no = self.RED_LED
         elif color == "GREEN":
-            self.gpio_no = self.GREEN_LED
+            self.__gpio_no = self.GREEN_LED
         elif color == "BLUE":
-            self.gpio_no = self.BLUE_LED
+            self.__gpio_no = self.BLUE_LED
 
-        GPIO.setup(self.gpio_no ,GPIO.OUT)
+        GPIO.setup(self.__gpio_no, GPIO.OUT)
 
         if color == "CENTER":
-            GPIO.setup(self.gpio_no1 ,GPIO.OUT)
             #CENTERの緑は常時点灯
-            GPIO.output(self.gpio_no ,True)
+            GPIO.output(self.__gpio_no, True)
 
     def __del__(self):
         GPIO.cleanup()
 
     #LEDを点灯
-    def start(self):
+    def start_led(self):
         #LEDをつける
-        GPIO.output(self.gpio_no ,GPIO.HIGH)
+        GPIO.output(self.__gpio_no, GPIO.HIGH)
 
     #LEDを消灯
-    def stop(self):
-        GPIO.output(self.gpio_no ,GPIO.LOW)
+    def stop_led(self):
+        GPIO.output(self.__gpio_no, GPIO.LOW)
 
     #CENTERの時はGREEN→BLUEに変色
-    def center_start(self):
-        GPIO.output(self.gpio_no ,False)
-        GPIO.output(self.gpio_no1 ,True)
+    def start_center_led(self):
+        GPIO.output(self.__gpio_no, False)
+        GPIO.output(self.CENTER_BLUE_LED, True)
 
-    def center_stop(self):
-        GPIO.output(self.gpio_no1 ,False)
-        GPIO.output(self.gpio_no ,True)
+    def stop_center_led(self):
+        GPIO.output(self.CENTER_BLUE_LED, False)
+        GPIO.output(self.__gpio_no, True)
 
