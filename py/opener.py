@@ -11,6 +11,7 @@ class Opener():
     global port
     global bl_err_alert
     global btsocket
+    global is_connected
 
     def __init__(self, **env_dict):
 
@@ -38,8 +39,8 @@ class Opener():
             except:    
                 print("send Error!")
                 self.__connect(self.addr, self.port)
-                if not (self.btsocket == None):
-                    print("disConnected!")
+                if self.is_connected:
+                    print("Connected!")
                     self.btsocket.send('on')
             
             #Bluetooth切断
@@ -54,10 +55,12 @@ class Opener():
         try:
             self.btsocket = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
             self.btsocket.connect((addr, port))
-            
+
+            self.is_connected = True
             self.bl_err_alert.stop()
         except :
             print('接続できるESP32がありません')
+            self.is_connected = False
             self.bl_err_alert.start()
 
     #切断
