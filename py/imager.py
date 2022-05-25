@@ -19,8 +19,8 @@ class ImgAnalysis():
         self.__list_face_recognition_result = []
 
         #alertクラスのインスタンス
-        self.__alert_camera_err = alert.Alert("LED","GREEN")
-        self.__alert_face_recognition = alert.Alert("LED","CENTER")
+        self.__alert_camera_err = alert.LedAlert("GREEN")
+        self.__alert_face_recognition = alert.ThreeColorLed()
 
         #カメラの設定
         self.__capture = cv2.VideoCapture(0)
@@ -75,7 +75,7 @@ class ImgAnalysis():
             #フレームに白枠を設定
             frame = self.__draw_rect(frame,front_face_list)
             #正常アラートを送信
-            self.__alert_face_recognition.start_center_alert()
+            self.__alert_face_recognition.start_alert()
         #顔認証NG
         else:
             #顔認証結果配列にTrueがある場合
@@ -83,7 +83,7 @@ class ImgAnalysis():
                 #顔認証したことにする
                 result_face_recognition = True
             #アラートを止める
-            self.__alert_face_recognition.stop_center_alert()
+            self.__alert_face_recognition.stop_alert()
         #カメラ動画の表示
         cv2.imshow('capture',frame)
         cv2.waitKey(1)

@@ -18,7 +18,7 @@ class Opener():
         self.__cnt_ble_buffer = 0
 
         #alertクラスのインスタンス
-        self.__bl_err_alert = alert.Alert("LED", "BLUE")
+        self.__bl_err_alert = alert.LedAlert("BLUE")
 
         #Bluetooth接続
         self.__connect_ble(self.__mac_addr_esp, self.__port_esp)

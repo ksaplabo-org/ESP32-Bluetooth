@@ -55,7 +55,7 @@ class Mqtt():
                               ciphers=None)
 
         #アラートクラスのインスタンス
-        self.__alert_mqtt_err = alert.Alert("LED","RED")
+        self.__alert_mqtt_err = alert.LedAlert("RED")
 
     def __del__(self):
         del self.__alert_mqtt_err
