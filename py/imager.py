@@ -29,7 +29,7 @@ class ImgAnalysis():
         self.capture.set(cv2.CAP_PROP_FPS, self.fps)
         self.capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
         self.capture.set(cv2.CAP_PROP_FRAME_WIDTH ,320)
-        self.capture.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('H', '2', '6', '4'))
+        #self.capture.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('H', '2', '6', '4'))
         
         #カスケード分類器を取得
         self.cascade = cv2.CascadeClassifier(self.cascade_path)
@@ -44,13 +44,12 @@ class ImgAnalysis():
 
     #画像解析
     def img_analysis(self):
-
         #リアルタイム静止画像の読み取りを繰り返す
         try:
             #フレームの読み取り
             ret,frame=self.capture.read()
             #カメラから読み取った画像をグレースケールに変換
-            gray=cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)   
+            gray=cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
             #顔の学習データ精査
             front_face_list=self.cascade.detectMultiScale(gray,minSize=(50,50))
         except:
@@ -66,18 +65,16 @@ class ImgAnalysis():
             result = True
         else:
             result = False
-        
+
         #結果をlistに格納
         self.face_result_list.pop(0)
         self.face_result_list.insert(self.list_max - 1, result)
-
         #顔認証OK
         if result:
             #フレームに白枠を設定
             frame = self.draw_rect(frame,front_face_list)
             #正常アラートを送信
-            self.face_alert.start()
-
+            self.face_alert.center_start()
         #顔認証NG
         else:
             #顔認証結果配列にTrueがある場合
@@ -85,8 +82,7 @@ class ImgAnalysis():
                 #顔認証したことにする
                 result = True
             #アラートを止める
-            self.face_alert.stop()
-        
+            self.face_alert.center_stop()
         #カメラ動画の表示
         cv2.imshow('capture',frame)
         cv2.waitKey(1)
