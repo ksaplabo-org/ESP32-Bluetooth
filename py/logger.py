@@ -6,6 +6,16 @@ import ssl
 import datetime
 import time
 import alert
+import boto3
+import board
+from adafruit_ssd1306 import SSD1306_I2C
+from PIL import Image, ImageDraw, ImageFont
+
+i2c = board.I2C()
+display = SSD1306_I2C(128, 64, board.I2C(), addr=0x3C)
+
+FONT_SANS_12 = ImageFont.truetype("/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc" ,12)
+FONT_SANS_18 = ImageFont.truetype("/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc" ,18)
 
 class Logger():
     """現在時刻を登録するクラス"""
@@ -17,15 +27,16 @@ class Logger():
     def __del__(self):
         del self.__mqtt
 
-    def write_log(self):
+    def write_log(self,file_path,image_name):
         """ログの登録
         """
 
         #メッセージを作成
         tmstr = "{0:%Y-%m-%d %H:%M:%S}".format(datetime.datetime.now())
-        json_msg = json.dumps({"GetDateTime": tmstr})
+        json_msg = json.dumps({"GetDateTime": tmstr,"ImageName":image_name})
         #MQTT送信
         self.__mqtt.publish_mqtt(json_msg)
+        self.__mqtt.writeS3(file_path,image_name)   
 
 class Mqtt():
     """データをIoT Coreでpublishするクラス"""
@@ -47,6 +58,7 @@ class Mqtt():
         self.__client = paho.mqtt.client.Client()
         self.__client.on_connect = self.__on_connect
         self.__client.on_disconnect = self.__on_disconnect
+        self.__client.on_message = self.__on_message
         self.__client.tls_set(self.MQTT_ROOTCA,
                               certfile=self.MQTT_CERT,
                               keyfile=self.MQTT_PRIKEY,
@@ -80,6 +92,8 @@ class Mqtt():
     #MQTT接続イベント
     def __on_connect(self, client, userdata, flags, rc):
         self.__is_connected = True
+        #subscribe.topic set
+        self.__client.subscribe(self.MQTT_TOPIC_SUB)
         #警告アラートを止める
         self.__alert_mqtt_err.stop_alert()
 
@@ -99,3 +113,24 @@ class Mqtt():
         #MQTT送信
         if self.__is_connected:
             self.__client.publish(self.MQTT_TOPIC_PUB ,json_msg, qos=1)
+
+
+    def __on_message(self,client, userdata, msg):
+        result = json.loads(msg.payload)
+        gender = '男性' if result["Gender"] == 'Male' else '女性'
+        age = result["Age"]
+
+        # draw image
+        img = Image.new("1",(display.width, display.height))
+        draw = ImageDraw.Draw(img)
+        draw.text((0,0),'性別 ' + gender,font=FONT_SANS_18,fill=1)
+        draw.text((0,32),'年齢 ' + str(age),font=FONT_SANS_18,fill=1)
+
+        display.image(img)
+        display.show()
+
+    def writeS3(self,file_path,image_name):
+        if self.__is_connected:
+            bucket_name = "ksap-dooropener-image"
+            s3 = boto3.resource('s3')
+            s3.Bucket(bucket_name).upload_file(file_path+image_name,'img/'+image_name)

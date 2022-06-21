@@ -4,6 +4,7 @@ from tkinter import Frame
 import time
 import cv2
 import alert
+import datetime
 
 class ImgAnalysis():
     """画像解析クラス"""
@@ -70,12 +71,18 @@ class ImgAnalysis():
         self.__list_face_recognition_result.pop(0)
         self.__list_face_recognition_result.insert(self.MAX_LISE_FACE_RECOGNITION_RESULT - 1,
                                                    result_face_recognition)
+        file_path=""
+        image_name=""
         #顔認証OK
         if result_face_recognition:
             #フレームに白枠を設定
             frame = self.__draw_rect(frame,front_face_list)
             #正常アラートを送信
             self.__alert_face_recognition.start_alert()
+            now = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+            image_name ='image'+now+'.jpg'
+            file_path='./workimg/'
+            cv2.imwrite(file_path+image_name, frame)
         #顔認証NG
         else:
             #顔認証結果配列にTrueがある場合
@@ -92,7 +99,7 @@ class ImgAnalysis():
         time.sleep(self.FPS/1000)
 
         #顔認証の結果をMain処理に返す
-        return result_face_recognition
+        return result_face_recognition,file_path,image_name
 
     #取り込んだフレームに白枠の設定
     def __draw_rect(self, frame ,rect_list):

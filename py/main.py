@@ -15,7 +15,7 @@ try:
 
         try:
             #顔認証行う
-            result = __imager.analyze_image()
+            result,file_path,image_name = __imager.analyze_image()
         except Exception:
             #異常終了の場合
             print('CameraErr')
@@ -33,7 +33,7 @@ try:
             #ドアOpen
             if __opener.open():
                 #Openした時のログを保持
-                __logger.write_log()
+                __logger.write_log(file_path,image_name)
 
         #顔認証してない場合
         else:
