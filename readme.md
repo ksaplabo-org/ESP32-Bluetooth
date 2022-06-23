@@ -8,6 +8,7 @@
 - [Raspberry Piとカメラを使って顔検出](#content6)  
 - [顔認識でServoを動かす](#content7)  
 - [残課題](#content8)  
+- [機能追加]
 
 <h2 id="content1">概要説明</h2>  
 
