@@ -24,7 +24,7 @@ class LedAlert(Alert):
     #変数宣言
     RED_LED = 26            #GPIOナンバー
     GREEN_LED = 19          #GPIOナンバー
-    BLUE_LED = 6            #GPIOナンバー
+    BLUE_LED = 13            #GPIOナンバー
 
     def __init__(self, color):
 

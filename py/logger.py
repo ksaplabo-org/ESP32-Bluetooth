@@ -1,21 +1,12 @@
 from this import d
-
 import paho.mqtt.client
 import json
 import ssl
 import datetime
 import time
 import alert
+import display
 import boto3
-import board
-from adafruit_ssd1306 import SSD1306_I2C
-from PIL import Image, ImageDraw, ImageFont
-
-i2c = board.I2C()
-display = SSD1306_I2C(128, 64, board.I2C(), addr=0x3C)
-
-FONT_SANS_12 = ImageFont.truetype("/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc" ,12)
-FONT_SANS_18 = ImageFont.truetype("/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc" ,18)
 
 class Logger():
     """現在時刻を登録するクラス"""
@@ -36,7 +27,10 @@ class Logger():
         json_msg = json.dumps({"GetDateTime": tmstr,"ImageName":image_name})
         #MQTT送信
         self.__mqtt.publish_mqtt(json_msg)
-        self.__mqtt.writeS3(file_path,image_name)   
+        self.__mqtt.writeS3(file_path,image_name) 
+
+    def refresh_display(self):
+        return self.__mqtt.refresh_display()  
 
 class Mqtt():
     """データをIoT Coreでpublishするクラス"""
@@ -68,6 +62,9 @@ class Mqtt():
 
         #アラートクラスのインスタンス
         self.__alert_mqtt_err = alert.LedAlert("RED")
+
+        #ディスプレイクラスのインスタンス
+        self.__display = display.Display()
 
     def __del__(self):
         del self.__alert_mqtt_err
@@ -116,21 +113,30 @@ class Mqtt():
 
 
     def __on_message(self,client, userdata, msg):
+        """ディスプレイに表示するデータをサブスクライブする
+        """
+        print("subscrible")
         result = json.loads(msg.payload)
         gender = '男性' if result["Gender"] == 'Male' else '女性'
         age = result["Age"]
 
-        # draw image
-        img = Image.new("1",(display.width, display.height))
-        draw = ImageDraw.Draw(img)
-        draw.text((0,0),'性別 ' + gender,font=FONT_SANS_18,fill=1)
-        draw.text((0,32),'年齢 ' + str(age),font=FONT_SANS_18,fill=1)
+        #ディスプレイに表示
+        self.__display.draw_display(gender, age)
 
-        display.image(img)
-        display.show()
+    def refresh_display(self):
+        return self.__display.refresh()
+        
+    def writeS3(self, file_path, image_name):
+        
+        if self.__is_connected is False:
+            self.connect_mqtt()
+        
+        if  self.__is_connected:
+            try:
+                bucket_name = "ksap-dooropener-image"
+                s3 = boto3.resource('s3')
+                s3.Bucket(bucket_name).upload_file(file_path+image_name,'img/'+image_name)    
+            except:
+                print("S3へのアップロードに失敗しました")
 
-    def writeS3(self,file_path,image_name):
-        if self.__is_connected:
-            bucket_name = "ksap-dooropener-image"
-            s3 = boto3.resource('s3')
-            s3.Bucket(bucket_name).upload_file(file_path+image_name,'img/'+image_name)
+

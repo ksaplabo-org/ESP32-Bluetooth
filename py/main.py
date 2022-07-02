@@ -40,7 +40,13 @@ try:
             #print("顔認証NG")
             #初期化
             __opener.reset_counter()
-except Exception:
+
+        #ディスプレイ表示更新
+        __logger.refresh_display()
+
+except Exception as e:
+    #何かしらのエラーをチャッチ
+    print(e)
     del __opener
     del __logger
     del __imager
