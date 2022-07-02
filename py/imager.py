@@ -5,6 +5,7 @@ import time
 import cv2
 import alert
 import datetime
+import os
 
 class ImgAnalysis():
     """画像解析クラス"""
@@ -82,6 +83,7 @@ class ImgAnalysis():
             now = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
             image_name ='image'+now+'.jpg'
             file_path='./workimg/'
+            os.makedirs(file_path ,exist_ok=True)
             cv2.imwrite(file_path+image_name, frame)
         #顔認証NG
         else:
